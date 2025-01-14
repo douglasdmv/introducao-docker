@@ -38,3 +38,46 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin 
 ```bash
 sudo docker run hello-world
 ```
+
+## Testando imagem do Nginx
+    
+- Baixar uma imagem do Nginx:
+        
+```bash
+  docker pull nginx
+```
+    
+- Iniciar um container Nginx(esse comando pode também já ser usado antes do pull, pois se não houver a imagem disponível, será baixado automaticamente).
+        
+```bash
+docker run --name nginx-container -d -p 8080:80 nginx
+```
+        
+- O Nginx estará disponível em [http://localhost:8080](http://localhost:8080/).
+    
+- Para parar o container:
+        
+```bash
+docker stop nginx-container
+```
+        
+- Para remover o container:
+        
+```bash
+docker rm nginx-container
+```
+
+## Comandos Úteis
+
+|Comando|Descrição|
+|---|---|
+|`docker --version`|Verificar a versão do Docker.|
+|`docker pull <imagem>`|Baixar uma imagem do Docker Hub.|
+|`docker run <imagem>`|Criar e executar um container.|
+|`docker ps`|Listar containers ativos.|
+|`docker ps -a`|Listar todos os containers (ativos ou não).|
+|`docker stop <nome>`|Parar um container em execução.|
+|`docker rm <nome>`|Remover um container.|
+|`docker images`|Listar imagens locais.|
+|`docker rmi <imagem>`|Remover uma imagem do repositório local.|
+
