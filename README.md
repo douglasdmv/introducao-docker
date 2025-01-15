@@ -80,4 +80,60 @@ docker rm nginx-container
 |`docker rm <nome>`|Remover um container.|
 |`docker images`|Listar imagens locais.|
 |`docker rmi <imagem>`|Remover uma imagem do repositório local.|
+|`docker image prune`|Limpar imagens sem referência.|
 
+## Subindo Banco de Dados MySQL
+
+```bash
+docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=root -d mysql:latest
+```
+- `-e MYSQL_ROOT_PASSWORD=root`: Define a senha do usuário `root` no MySQL.
+    - O usuário `root` tem privilégios administrativos para criar bancos, tabelas e usuários.
+- A senha será solicitada ao conectar ao MySQL (usando `mysql -uroot -p`).
+- Esse comando cria um banco de dados funcional e seguro com a senha especificada.
+
+```bash
+docker exec -it mysql-container mysql -uroot -p
+```
+- `docker exec`: Executa comandos em um container ativo.
+- `-it`: Permite interação com o terminal dentro do container.
+- `mysql -uroot -p`: Abre o cliente MySQL e autentica com o usuário `root`.
+    - Ao pressionar Enter, a senha configurada (`root`) será solicitada.
+
+```sql
+CREATE DATABASE exemplo;
+SHOW DATABASES;
+```
+
+## Subindo Banco de Dados MySQL com Volume
+
+```bash
+docker run --name mysql-persistent -e MYSQL_ROOT_PASSWORD=root -v mysql_data:/var/lib/mysql -d mysql:latest
+```
+- **`-v mysql_data:/var/lib/mysql`:**
+    - Cria um **volume nomeado** chamado `mysql_data`.
+    - Monta o volume no caminho `/var/lib/mysql` do container.
+    - Essa configuração **garante que os dados do banco sejam persistidos**, mesmo que o container seja removido.
+- Após parar e remover o container, o volume `mysql_data` mantém os dados.
+
+```bash
+docker exec -it mysql-persistent mysql -uroot -p
+```
+    
+```sql
+CREATE DATABASE persistencia;
+```
+
+É possível remover o container criado, e criar um novo com o mesmo volume, o que mantém os dados do banco anterior.
+```bash
+docker stop mysql-persistent
+docker rm mysql-persistent
+```
+
+```bash
+docker run --name mysql-new -e MYSQL_ROOT_PASSWORD=root -v mysql_data:/var/lib/mysql -d mysql:latest
+```
+
+```sql
+SHOW DATABASES;
+```
