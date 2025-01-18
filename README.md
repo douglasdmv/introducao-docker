@@ -82,6 +82,18 @@ docker rm nginx-container
 |`docker rmi <imagem>`|Remover uma imagem do repositório local.|
 |`docker image prune`|Limpar imagens sem referência.|
 
+
+### Opções comuns do docker run
+
+|Comando|Descrição|
+|---|---|
+|`-d`|Executa em modo detached (background)|
+|`-p [host-port]:[container-port]`|Mapeia portas|
+|`-v [host-path]:[container-path]`|Monta volumes|
+|`--name [nome]`|Define um nome para o container|
+|`-t`|Define uma tag/nome para a imagem durante o build ou execução|
+
+
 ## Subindo Banco de Dados MySQL
 
 ```bash
