@@ -137,3 +137,43 @@ docker run --name mysql-new -e MYSQL_ROOT_PASSWORD=root -v mysql_data:/var/lib/m
 ```sql
 SHOW DATABASES;
 ```
+
+## Criando uma imagem e adicionando ao DockerHub
+
+O Docker Hub é o registro público oficial de imagens Docker - um repositório centralizado onde você pode encontrar, compartilhar e distribuir imagens Docker. Funciona de forma similar ao GitHub, mas para imagens Docker.
+
+No repositório temos um projeto simples de conversão de distância, e nele há também um Dockerfile que a partir dele será feita a criação da imagem, com o que é necessário para que o projeto funcione. Abaixo estão os comandos iniciais para criação da imagem a partir do Dockerfile:
+
+```bash
+docker build -t conversao-distancia -f Dockerfile .
+```
+
+```bash
+docker build -t douglasmv/conversao-distancia:v1 .
+```
+
+Para subir imagens no DockerHub, é necessário antes realizar o login da sua conta, que caso não tenha pode ser criada em [https://hub.docker.com/](https://hub.docker.com/). Lembrando que o douglasmv dos comandos, deve ser substituido pela sua conta.
+
+```bash
+docker login
+```
+
+```bash
+docker push douglasmv/conversao-distancia:v1
+```
+
+É possível também trocar a versão da imagem através de tags, como feito nos comandos abaixo:
+
+```bash
+docker tag douglasmv/conversao-distancia:v1 douglasmv/conversao-distancia:latest
+```
+
+```bash
+docker push douglasmv/conversao-distancia:latest
+```
+
+Através do comando abaixo, é possível rodar a aplicação a partir da imagem armazenada no DockerHub. Se tudo ocorrer como esperado, a aplicação de conversão de distância estará disponível em [http://localhost:8080](http://localhost:8080/).
+
+```bash
+docker container run -d -p 8080:5000 douglasmv/conversao-distancia:v1
+```
