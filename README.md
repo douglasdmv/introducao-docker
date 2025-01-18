@@ -157,11 +157,11 @@ O Docker Hub é o registro público oficial de imagens Docker - um repositório 
 No repositório temos um projeto simples de conversão de distância, e nele há também um Dockerfile que a partir dele será feita a criação da imagem, com o que é necessário para que o projeto funcione. Abaixo estão os comandos iniciais para criação da imagem a partir do Dockerfile:
 
 ```bash
-docker build -t conversao-distancia -f Dockerfile .
+docker build -t conversao -f Dockerfile .
 ```
 
 ```bash
-docker build -t douglasmv/conversao-distancia:v1 .
+docker build -t douglasmv/conversao:v1 .
 ```
 
 Para subir imagens no DockerHub, é necessário antes realizar o login da sua conta, que caso não tenha pode ser criada em [https://hub.docker.com/](https://hub.docker.com/). Lembrando que o douglasmv dos comandos, deve ser substituido pela sua conta.
@@ -171,17 +171,17 @@ docker login
 ```
 
 ```bash
-docker push douglasmv/conversao-distancia:v1
+docker push douglasmv/conversao:v1
 ```
 
 É possível também trocar a versão da imagem através de tags, como feito nos comandos abaixo:
 
 ```bash
-docker tag douglasmv/conversao-distancia:v1 douglasmv/conversao-distancia:latest
+docker tag douglasmv/conversao:v1 douglasmv/conversao:latest
 ```
 
 ```bash
-docker push douglasmv/conversao-distancia:latest
+docker push douglasmv/conversao:latest
 ```
 
 Através do comando abaixo, é possível rodar a aplicação a partir da imagem armazenada no DockerHub. Se tudo ocorrer como esperado, a aplicação de conversão de distância estará disponível em [http://localhost:8080](http://localhost:8080/).
@@ -189,3 +189,69 @@ Através do comando abaixo, é possível rodar a aplicação a partir da imagem 
 ```bash
 docker container run -d -p 8080:5000 douglasmv/conversao-distancia:v1
 ```
+
+
+## Docker Compose
+
+Docker Compose é uma ferramenta para orquestrar aplicações multi-containers, permitindo definir e executar múltiplos containers Docker de forma declarativa através de um único arquivo YAML. Com ele, você pode configurar todos os serviços, redes e volumes necessários para sua aplicação em um único lugar, facilitando o gerenciamento e deploy de aplicações complexas. Abaixo temos um exemplo de um arquivo:
+
+```yaml
+services:
+# Aqui a gente bota o nome do serviço (como ele vai aparecer la no terminal depois)
+  backend:
+    # Caminho para o dockerfile desse serviço
+    build: ./nodejs-ping-pong
+    # Define o mapeamento de portas que vamos fazer
+    ports:
+      - "3000:3000"
+    # Qual o nome da rede que vamos usar
+    networks:
+      - app-network
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "4200:4200"
+    networks:
+      - app-network
+
+# Aqui definimos a rede que vamos usar
+networks:
+	# Chamando ela de app-network
+  app-network:
+    driver: bridge
+```
+
+
+## Comandos Docker Compose
+
+|Comando|Descrição|
+|---|---|
+|`docker-compose up`|Inicia todos os serviços definidos no arquivo docker-compose.yml|
+|`docker-compose up --build`|Força o rebuild das imagens antes de iniciar os serviços|
+|`docker-compose down`|Para e remove todos os containers, redes e volumes definidos|
+|`docker-compose ps`|Lista todos os containers em execução do compose|
+|`docker-compose logs`|Exibe os logs de todos os serviços|
+|`docker-compose logs [serviço]`|Exibe os logs de um serviço específico|
+|`docker-compose stop`|Para todos os serviços sem remover os containers|
+|`docker-compose start`|Inicia serviços que foram parados|
+|`docker-compose restart`|Reinicia todos os serviços|
+|`docker-compose exec [serviço] [comando]`|Executa um comando em um serviço específico|
+|`docker-compose run [serviço] bash`|Acessa o terminal bash de um serviço específico|
+
+
+### Flags comuns:
+
+- `-d` - Executa em modo detached (background)
+- `--build` - Força o rebuild das imagens
+    
+    Quando você executa o `docker-compose build` ou usa a flag `--build`, o Docker Compose irá construir todas as imagens definidas no arquivo docker-compose.yml que têm a instrução 'build' especificada. É similar ao comando `docker build`, mas com algumas diferenças importantes:
+    
+    - O Docker Compose automaticamente constrói todas as imagens necessárias em um único comando
+    - Ele mantém um cache das imagens construídas e só reconstrói o que foi modificado
+    - O contexto de build é definido no docker-compose.yml, não sendo necessário especificar o caminho do Dockerfile manualmente
+    
+    Por exemplo, no nosso docker-compose.yml acima, quando executamos `docker-compose up --build`, ele irá construir automaticamente as imagens tanto do backend quanto do frontend, usando os Dockerfiles especificados em seus respectivos diretórios.
+    
+- `--force-recreate` - Força a recriação dos containers
+- `-f` - Especifica um arquivo compose alternativo
